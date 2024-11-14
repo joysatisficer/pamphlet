@@ -107,7 +107,7 @@ export default function Index() {
     console.log(flow.length)
     setEmResponseInProgress(true);
     const anthropic = new Anthropic({
-      apiKey: '',
+      apiKey: process.env.EXPO_PUBLIC_ANTHROPIC_KEY,
     });
     async function getResponse() {
       console.log("Sending request to Claude")
