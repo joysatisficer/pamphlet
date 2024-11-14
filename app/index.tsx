@@ -4,6 +4,7 @@ import { MessageParam as AnthropicMessage, TextBlock } from '@anthropic-ai/sdk/r
 import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { FlatList } from 'react-native-gesture-handler';
 
 interface FlowImage {
   type: 'image';
@@ -84,6 +85,14 @@ export default function Index() {
     );
   }
 
+  if (cameraRef.current) {
+    (async () => {
+      // TODO: set aspect ratio to 4:3
+      const pictureSizes = await cameraRef.current.getAvailablePictureSizesAsync()
+
+    })()
+  }
+
   async function takePicture() {
     // TODO: Capture both front and back
     if (cameraRef.current) {
@@ -106,7 +115,7 @@ export default function Index() {
       try {
         msg = await anthropic.messages.create({
           model: "claude-3-haiku-20240307",
-          max_tokens: 16,
+          max_tokens: 72,
           messages: flowToAnthropic(flow),
         });
       } catch (error) {
@@ -122,15 +131,28 @@ export default function Index() {
     getResponse()
   }
 
-
-
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={'back'} ref={cameraRef}>
+      <CameraView
+        style={styles.camera}
+        facing={'back'}
+        ref={cameraRef}
+        animateShutter={true}
+        autofocus='on' // untested
+        >
+        <View>
+          {/* <FlatList
+            data={flow}
+            renderItem={({item}) => <MyText>item.content</MyText>}
+          /> */}
+        </View>
         <View style={styles.buttonContainer}>
           {/* TODO: List of messages with white*/}
           <TouchableOpacity style={styles.button} onPress={takePicture}>
-            <Ionicons name="camera" size={54} color={'white'} />
+            <Ionicons
+              name="scan-circle-outline"
+              size={88 /* e^4 * phi*/}
+              color={'rgba(253, 253, 253, 0.95)'} />
           </TouchableOpacity>
         </View>
       </CameraView>
@@ -163,3 +185,8 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+const MyText = ({children}) =>
+  <Text>
+    {children}
+  </Text>
