@@ -28,6 +28,7 @@ export default function HomeScreen() {
             {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
           </ThemedText>{' '}
           to open developer tools.
+          Hello
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
