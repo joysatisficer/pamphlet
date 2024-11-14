@@ -19,8 +19,8 @@ interface FlowText {
 
 type FlowElement = FlowImage | FlowText;
 
-function flowToAnthropic(flowElements: Array<FlowElement>) {
-  const anthropicMessages: Array<AnthropicMessage> = [];
+function flowToAnthropic(flowElements: FlowElement[]) {
+  const anthropicMessages: AnthropicMessage[] = [];
   for (let flowElement of flowElements) {
     switch (flowElement.type) {
       case 'image':
@@ -48,7 +48,7 @@ function flowToAnthropic(flowElements: Array<FlowElement>) {
     }
   }
   // condense runs of messages with the same role
-  const condensedAnthropicMessages: Array<AnthropicMessage> = [];
+  const condensedAnthropicMessages: AnthropicMessage[] = [];
   let previousRole = null;
   for (let anthropicMessage of anthropicMessages) {
     if (anthropicMessage.role === previousRole) {
@@ -64,7 +64,7 @@ function flowToAnthropic(flowElements: Array<FlowElement>) {
 }
 
 export default function Index() {
-  const [flow, setFlow] = useState([] as Array<FlowElement>);
+  const [flow, setFlow] = useState([] as FlowElement[]);
   const [emResponseInProgress, setEmResponseInProgress] = useState(false);
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
