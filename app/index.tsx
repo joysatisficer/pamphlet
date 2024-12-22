@@ -5,6 +5,8 @@ import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { FlatList } from 'react-native-gesture-handler';
+import * as Speech from 'expo-speech';
+import randomItem from 'random-item';
 
 interface FlowImage {
   type: 'image';
@@ -69,6 +71,14 @@ export default function Index() {
   const [emResponseInProgress, setEmResponseInProgress] = useState(false);
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [voices, setVoices] = useState([] as Speech.Voice[]);
+  
+  if (voices.length === 0) {
+    (async () => {
+      setVoices(await Speech.getAvailableVoicesAsync());
+    })();
+  }
+
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -122,11 +132,14 @@ export default function Index() {
         console.log(error);
         throw error;
       }
-      console.log((msg.content[0] as TextBlock).text)
+      setEmResponseInProgress(false);
+      const textOutput = ((msg.content[0] as TextBlock).text);
+      Speech.speak(textOutput, {
+        voice: randomItem(voices.filter(voice => voice.language === 'en-GB')).identifier
+      });
       setFlow(prevFlow => [...prevFlow, {type: 'text', 'author': 'claude', 
         'content': (msg.content[0] as TextBlock).text,
       }])
-      setEmResponseInProgress(false);
     }
     getResponse()
   }
@@ -139,6 +152,7 @@ export default function Index() {
         ref={cameraRef}
         animateShutter={true}
         autofocus='on' // untested
+        flash='auto'
         >
         <View>
           {/* <FlatList
